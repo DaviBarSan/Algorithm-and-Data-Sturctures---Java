@@ -37,52 +37,74 @@ public class OrderBook {
     private MinPriorityQueue<Order> bids;
 
 
+
+
+
     public OrderBook(String stockTitle, int lastBid, int lastAsk)
     {
-        //TODO: implement
-		throw new UnsupportedOperationException();
+        //Se o for o primeiro dia, deve-se inicializar um novo livro
+        //Caso contrário deve-se usar os valores do dia anterior refe
+        //referentes à lastBid e lastAsk;
+
+        this.stockTitle = stockTitle;
+
+        this.lastBid = lastBid;
+        this.lastAsk = lastAsk;
+
+        this.maxPrice = Integer.MAX_VALUE;
+        this.minPrice = Integer.MIN_VALUE;
+
+
+        // ->this.variation = variação do lastPrice em face ao dia anterior
+        //primeiro dia -> this.variation = 0
+        //um novo dia -> this.variation = lastPrice/previousDayPrice;
+
+
+        this.earnings = 0;
+        this.volume = 0;
+        this.processedOrders = 0;
+        this.unprocessedOrders = 0;
+
+        MinPriorityQueue<Order> asks = new MinPriorityQueue();
+        MinPriorityQueue<Order> bids = new MinPriorityQueue();
+
+
     }
 
     public String getStockTitle()
     {
-        //TODO: implement
-		throw new UnsupportedOperationException();
+        return stockTitle;
     }
 
     public int getLastBid()
     {
-        //TODO: implement
-		throw new UnsupportedOperationException();
+        return lastBid;
     }
 
     public int getLastAsk()
     {
-        //TODO: implement
-		throw new UnsupportedOperationException();
+        return lastAsk;
     }
 
     public int getLastPrice()
     {
-        //TODO: implement
-		throw new UnsupportedOperationException();
+        return lastPrice;
     }
 
     public int getMinPrice()
     {
-        //TODO: implement
-		throw new UnsupportedOperationException();
+        return minPrice;
     }
 
     public int getMaxPrice()
     {
-        //TODO: implement
-		throw new UnsupportedOperationException();
+       return maxPrice;
     }
 
     public int getNextBestBid()
     {
         //TODO: implement
-		throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public int getNextBestAsk()
@@ -109,16 +131,15 @@ public class OrderBook {
 		throw new UnsupportedOperationException();
     }
 
-    public int getVolume()
+    public int getVolume()                                            //volume de transações realizadas com sucesso;
     {
-        //TODO: implement
-		throw new UnsupportedOperationException();
+        return volume;
     }
 
-    public int getBrokerEarnings()
+    public int getBrokerEarnings()                                    //brokerEarnings = (bid - ask) * n
+                                                                      //deve ser atualizado à cada transação realizada com sucesso;
     {
-        //TODO: implement
-		throw new UnsupportedOperationException();
+        return earnings;
     }
 
     public void placeMarketOrder(ActionType action, int quantity)
@@ -131,8 +152,11 @@ public class OrderBook {
     public void placeLimitOrder(ActionType action, int quantity, int price)
     {
         Order order = new Order(this.stockTitle,++orderIDCounter,action, OrderType.LIMIT, quantity, price);
-        //TODO: implement
-		throw new UnsupportedOperationException();
+
+        if (action == ActionType.BID)
+            bids.insert(order);
+
+        else asks.insert(order);
     }
 
     public int processNextOrder(boolean verbose)
