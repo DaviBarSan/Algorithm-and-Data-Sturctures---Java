@@ -1,6 +1,6 @@
-package stockMarket;
+package aed.stockMarket;
 
-import collections.MinPriorityQueue;
+import aed.collections.MinPriorityQueue;
 
 import java.time.LocalDateTime;
 

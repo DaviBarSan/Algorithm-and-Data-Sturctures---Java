@@ -51,6 +51,7 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
 
     public static <T extends Comparable<T>> boolean isMinHeap(T[] a, int n) {
 
+        if (a[2] == null) return true;
 
         int lastParent = n / 2;
         int rootIndex = 1;
@@ -120,7 +121,7 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
     public void insert(T t) {
         int root = 1;
 
-        if (size > (maxSize/2)+maxSize/4) {    //size+1 uma vez que o indice 0 do array não foi contabilizado como elemento
+        if (size > maxSize/2) {    //size+1 uma vez que o indice 0 do array não foi contabilizado como elemento
             resize((T[]) heapQueue, 2 * maxSize);
 
         }
@@ -147,8 +148,7 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
         }
 
         this.heapQueue = resizedHeap.heapQueue;
-        this.maxSize = newSize-1;
-
+        this.maxSize = newSize;
 
     }
 
@@ -179,7 +179,7 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
         //se maxSize for maior que MinMaxSize = "o heap ja sofreu resize" ; e o nº de elementos for menor que 32;
         //fazer resize para MinMaxSize
         if (maxSize > MIN_MAXSIZE && size < MIN_MAXSIZE / 2)
-            resize((T[]) heapQueue, MIN_MAXSIZE + 1);
+            resize((T[]) heapQueue, MIN_MAXSIZE);
 
             //caso o heap ja tenha sofrido resize e size seja menor que o maxSize/4, fazer resize para metade do tamanho
         else if (maxSize > MIN_MAXSIZE && size < maxSize / 4)
@@ -231,15 +231,4 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
         return (checkIndex > lastParent && checkIndex <= currentLast);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
 

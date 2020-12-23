@@ -1,9 +1,9 @@
-package sorting;
+package aed.sorting;
 
 import java.util.Arrays;
 import java.util.Random;
 
-public class QuickSort extends sorting.Sort {
+public class QuickSort extends Sort {
 
 
 
