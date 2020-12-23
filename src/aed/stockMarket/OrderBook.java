@@ -37,11 +37,7 @@ public class OrderBook {
     private MinPriorityQueue<Order> bids;
 
 
-
-
-
-    public OrderBook(String stockTitle, int lastBid, int lastAsk)
-    {
+    public OrderBook(String stockTitle, int lastBid, int lastAsk) {
         //Se o for o primeiro dia, deve-se inicializar um novo livro
         //Caso contrário deve-se usar os valores do dia anterior refe
         //referentes à lastBid e lastAsk;
@@ -71,64 +67,53 @@ public class OrderBook {
 
     }
 
-    public String getStockTitle()
-    {
+    public String getStockTitle() {
         return stockTitle;
     }
 
-    public int getLastBid()
-    {
+    public int getLastBid() {
         return lastBid;
     }
 
-    public int getLastAsk()
-    {
+    public int getLastAsk() {
         return lastAsk;
     }
 
-    public int getLastPrice()
-    {
+    public int getLastPrice() {
         return lastPrice;
     }
 
-    public int getMinPrice()
-    {
+    public int getMinPrice() {
         return minPrice;
     }
 
-    public int getMaxPrice()
-    {
-       return maxPrice;
+    public int getMaxPrice() {
+        return maxPrice;
     }
 
-    public int getNextBestBid()
-    {
+    public int getNextBestBid() {
         //TODO: implement
         throw new UnsupportedOperationException();
     }
 
-    public int getNextBestAsk()
-    {
+    public int getNextBestAsk() {
         //TODO: implement
-		throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
-    public int getProcessedOrders()
-    {
+    public int getProcessedOrders() {
         //TODO: implement
-		throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
-    public int getUnprocessedOrders()
-    {
+    public int getUnprocessedOrders() {
         //TODO: implement
-		throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
-    public int getVariation()
-    {
+    public int getVariation() {
         //TODO: implement
-		throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public int getVolume()                                            //volume de transações realizadas com sucesso;
@@ -137,21 +122,19 @@ public class OrderBook {
     }
 
     public int getBrokerEarnings()                                    //brokerEarnings = (bid - ask) * n
-                                                                      //deve ser atualizado à cada transação realizada com sucesso;
+    //deve ser atualizado à cada transação realizada com sucesso;
     {
         return earnings;
     }
 
-    public void placeMarketOrder(ActionType action, int quantity)
-    {
-        Order order = new Order(this.stockTitle,++orderIDCounter,action, OrderType.MARKET, quantity, 0);
+    public void placeMarketOrder(ActionType action, int quantity) {
+        Order order = new Order(this.stockTitle, ++orderIDCounter, action, OrderType.MARKET, quantity, 0);
         //TODO: implement
-		throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
-    public void placeLimitOrder(ActionType action, int quantity, int price)
-    {
-        Order order = new Order(this.stockTitle,++orderIDCounter,action, OrderType.LIMIT, quantity, price);
+    public void placeLimitOrder(ActionType action, int quantity, int price) {
+        Order order = new Order(this.stockTitle, ++orderIDCounter, action, OrderType.LIMIT, quantity, price);
 
         if (action == ActionType.BID)
             bids.insert(order);
@@ -160,29 +143,31 @@ public class OrderBook {
     }
 
     public int processNextOrder(boolean verbose)
+    //alinha maior oferta com menor preço de venda
+    //asks e bids estão organizados em MinHeap
+    //maior oferta = maxValue da bid MinHeap
+    //menor preço de venda = minValue da ask MinHeap
     {
         //TODO: implement
-		throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
-    public boolean processNextOrders(int n, boolean verbose)
-    {
+    public boolean processNextOrders(int n, boolean verbose) {
         //TODO: implement
-		throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
-    public void printSummary()
-    {
+    public void printSummary() {
         System.out.println("Daily transaction summary for stock: " + this.getStockTitle());
         System.out.println("Orders processed: " + getProcessedOrders());
         System.out.println("Transaction volume: " + getVolume());
-        System.out.println("Last Price: " + getLastBid()/ticksPerUnit + (getVariation() < 0 ? " " : " +") + getVariation()/ticksPerUnit + "%");
-        System.out.println("Maximum Price: " + this.maxPrice/ticksPerUnit);
-        System.out.println("Minimum Price: " + this.minPrice/ticksPerUnit);
+        System.out.println("Last Price: " + getLastBid() / ticksPerUnit + (getVariation() < 0 ? " " : " +") + getVariation() / ticksPerUnit + "%");
+        System.out.println("Maximum Price: " + this.maxPrice / ticksPerUnit);
+        System.out.println("Minimum Price: " + this.minPrice / ticksPerUnit);
         System.out.println("Orders not processed: " + getUnprocessedOrders());
-        System.out.println("Best remaining ask: " + getNextBestAsk()/ticksPerUnit);
-        System.out.println("Best remaining bid: " + getNextBestBid()/ticksPerUnit);
-        System.out.println("Daily earnings: " + getBrokerEarnings()/ticksPerUnit);
+        System.out.println("Best remaining ask: " + getNextBestAsk() / ticksPerUnit);
+        System.out.println("Best remaining bid: " + getNextBestBid() / ticksPerUnit);
+        System.out.println("Daily earnings: " + getBrokerEarnings() / ticksPerUnit);
     }
 }
 
@@ -195,7 +180,7 @@ class Order implements Comparable<Order> {
     public int compareTo(Order o) {
 
         //TODO: implement
-		throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     final LocalDateTime time;
@@ -206,8 +191,7 @@ class Order implements Comparable<Order> {
     final OrderBook.ActionType action;
     final String stockTitle;
 
-    public Order(String stockTitle, long orderID, OrderBook.ActionType action, OrderBook.OrderType order, int quantity, int price)
-    {
+    public Order(String stockTitle, long orderID, OrderBook.ActionType action, OrderBook.OrderType order, int quantity, int price) {
         this.stockTitle = stockTitle;
         this.orderID = orderID;
         this.action = action;
@@ -217,10 +201,9 @@ class Order implements Comparable<Order> {
         this.price = price;
     }
 
-    public String toString()
-    {
-        String result = this.action.toString() + " ID: " + this.orderID  + " type: " + this.orderType.toString() + " quantity: " + this.quantity;
-        if(this.orderType == OrderBook.OrderType.LIMIT) result += " price: " + this.price/ticksPerUnit;
+    public String toString() {
+        String result = this.action.toString() + " ID: " + this.orderID + " type: " + this.orderType.toString() + " quantity: " + this.quantity;
+        if (this.orderType == OrderBook.OrderType.LIMIT) result += " price: " + this.price / ticksPerUnit;
 
         return result;
     }

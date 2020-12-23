@@ -1,4 +1,4 @@
-package sorting;
+package aed.sorting;
 
 public class Sort {
     protected static boolean less(Comparable v, Comparable w)
