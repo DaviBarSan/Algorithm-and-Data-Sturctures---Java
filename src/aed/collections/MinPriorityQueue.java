@@ -50,7 +50,6 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
     }
 
     public static <T extends Comparable<T>> boolean isMinHeap(T[] a, int n) {
-
         if (a[2] == null) return true;
 
         int lastParent = n / 2;
@@ -58,7 +57,7 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
         int checkedIndex = heapCheck(a, rootIndex, n);
 
         if (checkedIndex == lastParent) return true;
-        else return false;
+        return false;
 
 
     }
@@ -66,14 +65,24 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
     private static <T extends Comparable<T>> int heapCheck(T[] a, int curr, int n) {
         //método que avança o ponteiro até o ultimo nó pai que segue propriedades da minHeap e retorna-o
 
-        if (curr == n / 2) return curr;
+        int lastParent = n/2;
+        Comparable currentNode = a[curr];
+        Comparable firstChild = a[curr*2];
+        Comparable secondChild = a[(curr*2)+1];
 
-        if (less(a[curr], a[curr * 2]) && a[curr * 2 + 1] != null) {
-            if (less(a[curr], a[(curr * 2) + 1]))
-                return heapCheck(a, curr + 1, n);
+        if (curr > lastParent) return curr;
 
+        if (secondChild == null && lessOrEqual(currentNode, firstChild))
+            return curr;
+
+        if (lessOrEqual(currentNode, firstChild) && lessOrEqual(currentNode, secondChild)) {
+            return heapCheck(a, curr + 1, n);
         }
-        return curr;
+        else return curr;
+    }
+    private static <T extends Comparable<T>> boolean lessOrEqual(Comparable node, Comparable child){
+        if (node == child) return true;
+        return less(node, child);
     }
 
     public static void main(String[] args) {
@@ -231,4 +240,5 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
         return (checkIndex > lastParent && checkIndex <= currentLast);
     }
 }
+
 
