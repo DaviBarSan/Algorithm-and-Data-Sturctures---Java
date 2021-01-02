@@ -361,7 +361,7 @@ public class QuickSort extends Sort {
 
     int totalLenght = ReversedSorted.length-1;
 
-    for (int i = totalLenght; i >= 0; i--)
+    for (int i = 0; i <= totalLenght ; i- totalLe)
     {
         ReversedSorted[ReversedSorted.length - i] = i;
     }
