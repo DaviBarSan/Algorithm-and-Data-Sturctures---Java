@@ -65,10 +65,10 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
     private static <T extends Comparable<T>> int heapCheck(T[] a, int curr, int n) {
         //método que avança o ponteiro até o ultimo nó pai que segue propriedades da minHeap e retorna-o
 
-        int lastParent = n/2;
+        int lastParent = n / 2;
         Comparable currentNode = a[curr];
-        Comparable firstChild = a[curr*2];
-        Comparable secondChild = a[(curr*2)+1];
+        Comparable firstChild = a[curr * 2];
+        Comparable secondChild = a[(curr * 2) + 1];
 
         if (curr > lastParent) return curr;
 
@@ -77,21 +77,16 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
 
         if (lessOrEqual(currentNode, firstChild) && lessOrEqual(currentNode, secondChild)) {
             return heapCheck(a, curr + 1, n);
-        }
-        else return curr;
+        } else return curr;
     }
-    private static <T extends Comparable<T>> boolean lessOrEqual(Comparable node, Comparable child){
+
+    private static <T extends Comparable<T>> boolean lessOrEqual(Comparable node, Comparable child) {
         if (node == child) return true;
         return less(node, child);
     }
 
     public static void main(String[] args) {
         /*
-        Random r = new Random();
-
-        Integer[] testArray = new Integer[257];
-        for (int i = 0; i < testArray.length; i++)
-            testArray[i] = r.nextInt(20);
 
         MinPriorityQueue testHeap = new MinPriorityQueue(testArray);
 
@@ -111,6 +106,28 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
         //fazer o resize caso o array seja muito menor que o maxSize;
         //elements size = tamanho do array contando com o index 0;
         */
+        Random r = new Random();
+        long[] timeSpamArray = new long[257];
+
+        Integer[] testArray = new Integer[257];
+        for (int i = 0; i < testArray.length; i++)
+            testArray[i] = r.nextInt(20);
+
+        MinPriorityQueue testHeap = new MinPriorityQueue();
+        for (int i = 0; i < testArray.length; i++){
+            long startTime = System.currentTimeMillis();
+            testHeap.insert(testArray[i]);
+            long endTime = System.currentTimeMillis();
+            timeSpamArray[i] = endTime - startTime;
+        }
+        System.out.println(Arrays.toString(timeSpamArray));
+        System.out.println(Arrays.toString(testHeap.heapQueue));
+
+
+
+
+
+
     }
 
     public MinPriorityQueue<T> clone() {
@@ -130,7 +147,7 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
     public void insert(T t) {
         int root = 1;
 
-        if (size > maxSize/2) {    //size+1 uma vez que o indice 0 do array não foi contabilizado como elemento
+        if (size > maxSize / 2) {    //size+1 uma vez que o indice 0 do array não foi contabilizado como elemento
             resize((T[]) heapQueue, 2 * maxSize);
 
         }
@@ -240,5 +257,6 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
         return (checkIndex > lastParent && checkIndex <= currentLast);
     }
 }
+
 
 

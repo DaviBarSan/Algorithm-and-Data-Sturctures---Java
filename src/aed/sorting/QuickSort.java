@@ -66,7 +66,6 @@ public class QuickSort extends Sort {
     public static void medianSort(Comparable[] a) {
         innerMedianSort(a, 0, a.length - 1);
 
-
         //fazer medianSort, colocar condicional boolena do cutOff, if true fazer insertionSort no começo da recursão
 
     }
@@ -302,7 +301,7 @@ public class QuickSort extends Sort {
 
 
         //already sorted array------------------------------------------------------------------------------------------
-        Comparable[] AlreadySorted= new Comparable[100000];
+        Comparable[] AlreadySorted = new Comparable[100000];
 
         long[] timespamArrayQuickSortAlreadySorted = new long[75];
         long[] timespamArrayMedianSortAlreadySorted = new long[75];
@@ -366,8 +365,6 @@ public class QuickSort extends Sort {
         ReversedSorted[ReversedSorted.length - i] = i;
     }
     */
-
-
 
 
 }

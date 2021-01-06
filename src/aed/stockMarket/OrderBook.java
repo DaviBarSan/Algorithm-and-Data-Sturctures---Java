@@ -92,7 +92,9 @@ public class OrderBook {
     }
 
     public int getNextBestBid() {
-        //TODO: implement
+    if (bids.isEmpty()) return 0;
+
+
         throw new UnsupportedOperationException();
     }
 
