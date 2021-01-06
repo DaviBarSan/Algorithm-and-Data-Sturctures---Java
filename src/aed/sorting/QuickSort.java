@@ -141,7 +141,7 @@ public class QuickSort extends Sort {
         Random r = new Random();
         Comparable[] intArray = new Comparable[10];
         for (int i = 0; i < intArray.length; i++) {
-            intArray[i] = r.nextInt(10);
+            intArray[i] = r.nextInt(25);
         }
         return intArray;
     }
@@ -202,13 +202,6 @@ public class QuickSort extends Sort {
         //array parcialmente (1/8 == random), array aleatório.
 
 
-        //partialy sorted array (1/8 random)
-        /*
-        for (int i = 0; i < testArray.length; i++)
-            testArray[i] = i;
-        for (int m = 0; m < testArray.length/8; m++)
-            testArray[m] = r.nextInt(testArray.length/8);
-        */
 
         Random r = new Random();
         Comparable[] RandomArray = new Comparable[100000];
@@ -253,6 +246,7 @@ public class QuickSort extends Sort {
 
         System.out.println("For random array with 100.000 elements, QuickSort average time of 75 tests: " + meanQuickTime + "ms");
         System.out.println("For random array with 100.000 elements, MedianSort average time of 75 tests: " + meanMedianTime + "ms");
+
 
         //all elements are random with bound << array capacity (muitos elementos repetidos)-----------------------------
 
@@ -344,7 +338,52 @@ public class QuickSort extends Sort {
         System.out.println("For already sorted array with 100.000 elements, QuickSort average time of 75 tests: " + meanQuickTimeSorted + "ms");
         System.out.println("For already sorted array with 100.000 elements, MedianSort average time of 75 tests: " + meanMedianTimeSorted + "ms");
 
-    }
+        //partialy sorted array (1/8 == random elements)
+        Comparable[] PartialySorted = new Comparable[100000];
+
+        long[] timespamArrayQuickSortPartialySorted = new long[75];
+        long[] timespamArrayMedianSortPartialySorted = new long[75];
+
+        long sumQuickTimePartialy = 0;
+        long meanQuickTimePartialy = 0;
+
+        long sumMedianTimePartialy = 0;
+        long meanMedianTimePartialy = 0;
+
+
+        for (int i = 0; i < PartialySorted.length; i++)
+            PartialySorted[i] = i;
+        for (int m = 0; m < PartialySorted.length/8; m++)
+            PartialySorted[m] = r.nextInt(PartialySorted.length/8);
+
+        for (int i = 0; i < 75; i++) {
+
+            long startTimeQuickSort = System.currentTimeMillis();
+            sort(PartialySorted);
+            long endTimeQuickSort = System.currentTimeMillis();
+
+            long startTimeMedianSort = System.currentTimeMillis();
+            medianSort(PartialySorted);
+            long endTimeMedianSort = System.currentTimeMillis();
+
+            long timespanQuickSort = endTimeQuickSort - startTimeQuickSort;
+            timespamArrayQuickSortPartialySorted[i] = timespanQuickSort;
+
+            long timespanMedianSort = endTimeMedianSort - startTimeMedianSort;
+            timespamArrayMedianSortPartialySorted[i] = timespanMedianSort;
+
+
+            sumQuickTimePartialy += timespanQuickSort;
+            sumMedianTimePartialy += timespanMedianSort;
+        }
+            meanQuickTimePartialy = sumQuickTimePartialy / timespamArrayQuickSortPartialySorted.length;
+            meanMedianTimePartialy = sumMedianTimePartialy / timespamArrayMedianSortPartialySorted.length;
+
+            System.out.println("For partialy sorted array with 100.000 elements, QuickSort average time of 75 tests: " + meanQuickTimePartialy + "ms");
+            System.out.println("For partialy sorted array with 100.000 elements, MedianSort average time of 75 tests: " + meanMedianTimePartialy + "ms");
+
+
+        }
     //reversed sorted array---------------------------------------------------------------------------------------------
     /*
     Comparable[] ReversedSorted= new Comparable[100000];
@@ -364,6 +403,43 @@ public class QuickSort extends Sort {
     {
         ReversedSorted[ReversedSorted.length - i] = i;
     }
+
+
+                ----------------------TESTING CUTOFF---------------------
+
+    CUTOFF = 10
+For random array with 100.000 elements, QuickSort average time of 75 tests: 16ms
+For random array with 100.000 elements, MedianSort average time of 75 tests: 6ms
+For random array with 100.000 elements, many repeated, QuickSort average time of 75 tests: 12ms
+For random array with 100.000 elements, many reapeated,  MedianSort average time of 75 tests: 7ms
+For already sorted array with 100.000 elements, QuickSort average time of 75 tests: 12ms
+For already sorted array with 100.000 elements, MedianSort average time of 75 tests: 7ms
+For partialy sorted array with 100.000 elements, QuickSort average time of 75 tests: 14ms
+For partialy sorted array with 100.000 elements, MedianSort average time of 75 tests: 3ms
+
+    CUTOFF = 25
+For random array with 100.000 elements, QuickSort average time of 75 tests: 16ms
+For random array with 100.000 elements, MedianSort average time of 75 tests: 7ms
+For random array with 100.000 elements, many repeated, QuickSort average time of 75 tests: 12ms
+For random array with 100.000 elements, many reapeated,  MedianSort average time of 75 tests: 7ms
+For already sorted array with 100.000 elements, QuickSort average time of 75 tests: 12ms
+For already sorted array with 100.000 elements, MedianSort average time of 75 tests: 7ms
+For partialy sorted array with 100.000 elements, QuickSort average time of 75 tests: 12ms
+For partialy sorted array with 100.000 elements, MedianSort average time of 75 tests: 4ms
+
+
+
+    WITHOUT CUTOFF
+For random array with 100.000 elements, QuickSort average time of 75 tests: 16ms
+For random array with 100.000 elements, MedianSort average time of 75 tests: 9ms
+For random array with 100.000 elements, many repeated, QuickSort average time of 75 tests: 13ms
+For random array with 100.000 elements, many reapeated,  MedianSort average time of 75 tests: 9ms
+For already sorted array with 100.000 elements, QuickSort average time of 75 tests: 13ms
+For already sorted array with 100.000 elements, MedianSort average time of 75 tests: 9ms
+For partialy sorted array with 100.000 elements, QuickSort average time of 75 tests: 12ms
+For partialy sorted array with 100.000 elements, MedianSort average time of 75 tests: 4ms
+
+
     */
 
 
