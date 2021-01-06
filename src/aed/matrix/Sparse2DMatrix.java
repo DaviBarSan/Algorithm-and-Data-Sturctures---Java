@@ -11,6 +11,7 @@ public class Sparse2DMatrix {
 
     public int getNumberNonZero() {
 		//TODO: implement
+        return;
     }
 
     public void put(int line, int column, float value)
@@ -48,4 +49,6 @@ public class Sparse2DMatrix {
     {
 		//TODO: implement
     }
+
+
 }
