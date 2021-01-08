@@ -108,19 +108,27 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
         */
         Random r = new Random();
         long[] timeSpamArray = new long[257];
-
+        long sumTimeSpam = 0;
         Integer[] testArray = new Integer[257];
         for (int i = 0; i < testArray.length; i++)
             testArray[i] = r.nextInt(20);
 
         MinPriorityQueue testHeap = new MinPriorityQueue();
         for (int i = 0; i < testArray.length; i++){
-            long startTime = System.currentTimeMillis();
+            long startTime = System.nanoTime();
             testHeap.insert(testArray[i]);
-            long endTime = System.currentTimeMillis();
-            timeSpamArray[i] = endTime - startTime;
+            long endTime = System.nanoTime();
+
+            long timeSpam = endTime - startTime;
+            timeSpamArray[i] = timeSpam;
+
+            sumTimeSpam += timeSpam;
         }
+
+        long meanTimeSpamArray = sumTimeSpam/timeSpamArray.length;
+
         System.out.println(Arrays.toString(timeSpamArray));
+        System.out.println(meanTimeSpamArray);
         System.out.println(Arrays.toString(testHeap.heapQueue));
 
 
@@ -241,7 +249,9 @@ public class MinPriorityQueue<T extends Comparable<T>> extends Sort {
         //n = last valid heap index;
         int child = k * 2;
         while (child <= n) {
-            //set the pointer "child" to the biggest child
+            //set the pointer "child" to the lowest child
+            //child é o ponteiro com qual k irá realizar exchange
+            //logo, se k for menor que o menor dos filhos, pode-se trocar com ambos
             if (child < n && less(a[child + 1], a[child]))
                 child++;
             if (!less(a[child], a[k])) break;

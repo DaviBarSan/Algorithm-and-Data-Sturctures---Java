@@ -6,6 +6,22 @@ import java.util.Iterator;
 
 public class OpenAdressingHashTable<Key,Value> {
 
+    int m;
+    int size, primeIndex;
+    float loadFactor;
+    boolean deleteNotRemoved;
+    int deleteCount;
+
+
+    private Key[] keys;
+    private Value[] values;
+
+    private static final int MIN_PRIMEINDEX = 0;
+
+
+
+
+
 
 
 
@@ -19,27 +35,48 @@ public class OpenAdressingHashTable<Key,Value> {
 
     public OpenAdressingHashTable()
     {
-        //TODO: implement
+        //Keys e Values são arrays com index correspondentes;
+        //m = lenght dos arrays Keys e Values;
+        //n = número de elementos nestes arrays;
+
+        this.size = 0;
+        this.primeIndex = primeIndex;
+        this.m = primes[MIN_PRIMEINDEX + primeIndex];
+        this.loadFactor = size/primeIndex;
+
+        this.deleteCount = 0;
+        this.deleteNotRemoved = deleteNotRemoved;
+
+        this.keys = (Key[]) new Object[m];
+        this.values = (Value[]) new Object[m];
+    }
+    private int hash(Key k) {
+        //using hashCode with an function that convert negative
+        //values into positive. Otherway, it would generate negative
+        //indexes;
+        //% operator guarantee loop over array when hashCode is bigger
+        //than array lenght (m);
+        return (k.hashCode() & 0x7fffffff) % m;
     }
 
     public int size()
     {
-        //TODO: implement
+        return size;
     }
 
     public int getCapacity()
     {
-        //TODO: implement
+        return m;
     }
 
     public float getLoadFactor()
     {
-        //TODO: implement
+        return loadFactor;
     }
 
     public int getDeletedNotRemoved()
     {
-        //TODO: implement
+        return deleteCount;
     }
 
     public boolean containsKey(Key k)
