@@ -1,28 +1,16 @@
 package aed.tables;
 
-import aed.collections.QueueArray;
-
-import java.util.Iterator;
+import javax.security.auth.kerberos.KerberosTicket;
 
 public class OpenAdressingHashTable<Key,Value> {
-
     int m;
     int size, primeIndex;
     float loadFactor;
-    boolean deleteNotRemoved;
-    int deleteCount;
-
+    int deletedCounter;
+    public Key deletedNotRemoved;
 
     private Key[] keys;
     private Value[] values;
-
-    private static final int MIN_PRIMEINDEX = 0;
-
-
-
-
-
-
 
 
     private static int[] primes = {
@@ -41,11 +29,10 @@ public class OpenAdressingHashTable<Key,Value> {
 
         this.size = 0;
         this.primeIndex = primeIndex;
-        this.m = primes[MIN_PRIMEINDEX + primeIndex];
-        this.loadFactor = size/primeIndex;
+        this.m = primes[primeIndex];
+        this.loadFactor = 0;
+        this.deletedCounter = 0;
 
-        this.deleteCount = 0;
-        this.deleteNotRemoved = deleteNotRemoved;
 
         this.keys = (Key[]) new Object[m];
         this.values = (Value[]) new Object[m];
@@ -76,32 +63,95 @@ public class OpenAdressingHashTable<Key,Value> {
 
     public int getDeletedNotRemoved()
     {
-        return deleteCount;
+        return deletedCounter;
     }
 
     public boolean containsKey(Key k)
     {
-        //TODO: implement
+        int i = hash(k);
+        for (;keys[i] != null; i = (i+1) % m)
+            if (k.equals(i)) return true;
+        return false;
     }
 
     public Value get(Key k)
     {
-		//TODO: implement
+        int i = hash(k);
+
+
+        if (keys[i] == deletedNotRemoved) return null;
+        int flag = 0;
+        //avoiding infite loop if key is not in hashTable;
+        while (flag < 2) {
+            for (; keys[i] != null && keys[i] != deletedNotRemoved; i = (i + 1) % m) {
+                if (keys[i].equals(k)) return values[i];
+                //avoiding infite loop if key is not in hashTable;
+                if (i % hash(k) == 0) flag++;
+            }
+        }
+        return null;
     }
 
     public void put(Key k, Value v)
     {
-		//TODO: implement
+        if (loadFactor>=0.5) resize(++primeIndex);
+
+        int i = hash(k);
+        //avançar com o ponteiro i até um valor null dentro da hashTable, fazendo linearProbing
+        for (; keys[i] != null; i = (i+1) % m){
+            //caso o hash coloque o i no pont
+            if(keys[i].equals(k)){
+                values[i] = v;
+                return;
+            }
+        }
+        //caso o ponteiro i direcionado pelo hash caia diretamente em uma bucket vazia, a condição do for irá falhar
+        //os valores ja podem ser atualizados automaticamente;
+        keys[i] = k;
+        values[i] = v;
+        size++;
+        loadFactor = size/m;
+
     }
 
     public void delete(Key k)
     {
 		//lazy delete
-        //TODO: implement
+        int i = hash(k);
+        for(; keys[i] != null && keys[i] != deletedNotRemoved; i = (i+1) % m){
+            if (keys[i].equals(k)){
+               k = deletedNotRemoved;
+               deletedCounter++;
+            }
+        }
     }
 
     public Iterable<Key> keys() {
         //TODO: implement
+    }
+//-------------------- acessory methods ----------------------
+    private void resize(int primeIndex) {
+        //avoid errors
+        if (primeIndex < 0 || primeIndex >= primes.length) return;
+
+        int oldM = m;
+        //update this.primeIndex using parameter value;
+        this.primeIndex = primeIndex;
+        //new hashTable, using new prime as reference to capacity;
+        //Constructor(newSize) already update m value to next primeIndex
+        OpenAdressingHashTable<Key,Value> aux = new OpenAdressingHashTable<Key,Value>(this.primeIndex);
+        //placing all existing keys on new hashTable
+        for (int i = 0; i < oldM; i++){
+            if(keys[i] != null) aux.put(keys[i], values[i]);
+        }
+        this.keys = aux.keys;
+        this.values = aux.values;
+        this.loadFactor = size/m;
+
+    }
+    public OpenAdressingHashTable(int newPrimeIndex){
+        this.m = primes[newPrimeIndex];
+
     }
 
 
