@@ -5,12 +5,14 @@ import java.util.Arrays;
 public class OpenAdressingHashTable<Key,Value> {
     int m;
     int size, primeIndex;
+    private static final int MIN_PRIMEINDEX = 1;
     float loadFactor;
     int deletedCounter;
     private Key deletedNotRemoved = (Key) new Object();;
 
     private Key[] keys;
     private Value[] values;
+
 
 
     private static int[] primes = {
@@ -28,7 +30,7 @@ public class OpenAdressingHashTable<Key,Value> {
         //n = número de elementos nestes arrays;
 
         this.size = 0;
-        this.primeIndex = primeIndex;
+        this.primeIndex = 1;
         this.m = primes[primeIndex];
         this.loadFactor = 0;
         this.deletedCounter = 0;
@@ -74,13 +76,17 @@ public class OpenAdressingHashTable<Key,Value> {
     {
         int i = hash(k);
         for (;keys[i] != null; i = (i+1) % m)
-            if (k.equals(i)) return true;
+            if (k.equals(keys[i])) return true;
         return false;
     }
 
     public Value get(Key k)
     {
         int i = hash(k);
+        //difference between == and .equals():
+        // == operator do an adress comparation, setted in object memory location;
+        //.equals() method compares the content. Even if the objects has different memory adress location, if the content
+        //is equal, it return true
         if (keys[i] == deletedNotRemoved) return null;
         for (; keys[i] != null; i = (i + 1) % m) {
             if (keys[i].equals(k)) return values[i];
@@ -115,15 +121,16 @@ public class OpenAdressingHashTable<Key,Value> {
 		//lazy delete
         int i = hash(k);
         for(; keys[i] != null; i = (i+1) % m){
-            if (keys[i].equals(k)){
-               keys[i] = deletedNotRemoved;
-               deletedCounter++;
+            if (keys[i].equals(k)) {
+                keys[i] = deletedNotRemoved;
+                deletedCounter++;
             }
         }
-    }
-    /*
-    public Iterable<Key> keys() {
+        if ((float) deletedCounter/m > 0.2) {resize(primeIndex);}
+        else if (primeIndex > MIN_PRIMEINDEX && (float) (size-deletedCounter)/m  < 0.125) resize(--primeIndex);
 
+    }/*
+    public Iterable<Key> keys() {
         //TODO: implement
 
     }
@@ -164,7 +171,13 @@ public class OpenAdressingHashTable<Key,Value> {
 /*  ------CORNER SITUATION----
     ->quando usar put, e encontrar uma tombstone, usar esta ao invés de continuar buscando uma key null; DONE
     ->quando fizer resize, a tombstone não deve inserida novamente, então deve-se diminuir size e deletedCounter; DONE
-    ->se ao fazer delete de uma key o fator de carga seja < 0.125 (1/8), deve-se fazer resize para primeIndex--,
-    ->que no entanto deve ser no minimo [37] (MIN_PRIMEINDEX = 1)
+    ->se ao fazer delete de uma key o fator de carga seja < 0.125 (1/8), deve-se fazer resize para primeIndex--
+      que no entanto deve ser no minimo [37] (MIN_PRIMEINDEX = 1);DONE
+    ->ao fazer delete de uma key, caso deletedCounter/m >= 0.2, as tombstones devem ser efetivamente deletadas; DONE
 
+
+
+    classe deleted
+        ponteiro para as tombstones;
+        method que apaga todas as tombstones;
  */
