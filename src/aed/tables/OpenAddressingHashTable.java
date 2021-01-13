@@ -4,13 +4,11 @@ import java.util.Iterator;
 
 @SuppressWarnings("unchecked")
 public class OpenAddressingHashTable<Key,Value>{
-    private Key deletedNotRemoved = (Key) new Object();
     int m;
     int size, primeIndex;
     private static final int MIN_PRIMEINDEX = 1;
     float loadFactor;
     int deletedCounter;
-    private Value valueDeletedNotRemoved = (Value) new Object();
 
 
     private Key[] keys;
@@ -36,9 +34,9 @@ public class OpenAddressingHashTable<Key,Value>{
         this.loadFactor = 0;
         this.deletedCounter = 0;
 
-
         this.keys = (Key[]) new Object[m];
         this.values = (Value[]) new Object[m];
+
 
 
     }
@@ -71,7 +69,7 @@ public class OpenAddressingHashTable<Key,Value>{
     public boolean containsKey(Key k) {
         int i = hash(k);
         for (; keys[i] != null; i = (i + 1) % m)
-            if (k.equals(keys[i])) return true;
+            if (keys[i].equals(k) && values[i] != null) return true;
         return false;
     }
 
@@ -81,55 +79,43 @@ public class OpenAddressingHashTable<Key,Value>{
         // == operator do an adress comparation, setted in object memory location;
         //.equals() method compares the content. Even if the objects has different memory adress location, if the content
         //is equal, it return true
-        if (keys[i] == deletedNotRemoved) return null;
         for (; keys[i] != null; i = (i + 1) % m) {
-            if (keys[i].equals(k)) return values[i];
+            if (keys[i].equals(k)) {
+                if (values[i] == null) {
+                    return null;
+                }
+                return values[i];
+            }
         }
         return null;
     }
-    public void nullValueDetected(int i){
-        keys[i] = deletedNotRemoved;
-        values[i] = valueDeletedNotRemoved;
-        deletedCounter++;
-        size--;
-        this.loadFactor = (float) size/m;
-        if (primeIndex > MIN_PRIMEINDEX && loadFactor < 0.125) {
-            resize(--primeIndex);
-        }
-        if ((float) deletedCounter / m > 0.2) {
-            resize(primeIndex);
-        }
-    }
-    public void put(Key k, Value v) {
 
+    public void put(Key k, Value v) {
         if (k == null)return;
+        if(v == null) {
+            delete(k);
+            return;
+        }
         int i = hash(k);
         //avançar com o ponteiro i até um valor null dentro da hashTable, fazendo linearProbing
         for (; keys[i] != null; i = (i + 1) % m) {
             //check if key already exists
             if (keys[i].equals(k)) {
-                //se for inserida chave ja existente mas com value = null, terá o mesmo efeito de um delete
-                if(v == null) {
-                    nullValueDetected(i);
-                    return;
+                //se for inserida chave ja existente mas antes estava marcada como apagada (values[i] == null), será um reciclagem;
+                if (values[i] == null) {
+                    break;
                 }
                 //updating value
                 values[i] = v;
                 return;
             }
-            //otherway, if its inserted key == tombstone;
-            else if (keys[i] == deletedNotRemoved) {
-                break;
-            }
         }
-        //if inserting an key in a tombstone and value inserted is null, nothing is done;
-        if (v == null) return;
         //once key index was found, insert it
         keys[i] = k;
         values[i] = v;
         size++;
         this.loadFactor = (float) size / m;
-        if (loadFactor >= 0.5) {
+        if (loadFactor >= 0.5f) {
             resize(++primeIndex);
         }
     }
@@ -139,19 +125,20 @@ public class OpenAddressingHashTable<Key,Value>{
         //lazy delete
         int i = hash(k);
         for (; keys[i] != null; i = (i + 1) % m) {
-            if (keys[i] == deletedNotRemoved) continue;
-            //i index already positionated in exactely index that maight be deleted
+            //i index already positionated in exactely index that might be deleted
             if (keys[i].equals(k)) {
-                keys[i] = deletedNotRemoved;
+                if (values[i] == null) return;
+                values[i] = null;
                 deletedCounter++;
                 size--;
                 this.loadFactor = (float) size/m;
+                break;
             }
         }
-        if (primeIndex > MIN_PRIMEINDEX && loadFactor < 0.125) {
+        if (primeIndex > MIN_PRIMEINDEX && loadFactor < 0.125f) {
             resize(--primeIndex);
         }
-        if ((float) deletedCounter / m > 0.2) {
+        if (((float) deletedCounter / m) >= 0.2f) {
             resize(primeIndex);
         }
     }
@@ -162,6 +149,7 @@ public class OpenAddressingHashTable<Key,Value>{
             public Iterator<Key> iterator() {
                 return new Iterator<Key>() {
                     int currentIndex = 0;
+
                     @Override
                     public boolean hasNext() {
                         return keys[currentIndex % m] != null;
@@ -171,8 +159,9 @@ public class OpenAddressingHashTable<Key,Value>{
                     public Key next() {
                         if(!hasNext()) return null;
 
-                        else if (keys[currentIndex % m] == deletedNotRemoved){
-                            currentIndex++;
+                        else if (values[currentIndex % m] == null){
+                             currentIndex++;
+                             return next();
                         }
                         return keys[currentIndex++];
                     }
@@ -192,14 +181,13 @@ public class OpenAddressingHashTable<Key,Value>{
         //placing all existing keys on new hashTable
         for (int i = 0; i < m-1; i++) {
             //reinserting only valid keys;
-            if (keys[i] != null && keys[i] != deletedNotRemoved) aux.put(keys[i], values[i]);
+            if (keys[i] != null && values[i] != null) aux.put(keys[i], values[i]);
         }
         this.keys = aux.keys;
         this.values = aux.values;
         this.m = aux.m;
         this.deletedCounter = 0;
         this.loadFactor = (float) size / m;
-
     }
     @SuppressWarnings("unchecked")
     public OpenAddressingHashTable(int newPrimeIndex) {
@@ -228,7 +216,7 @@ public class OpenAddressingHashTable<Key,Value>{
             if (keys[i].equals(k)) {
                 values[i] = v;
                 return;
-            } else if (keys[i] == deletedNotRemoved)
+            } else if (values[i] == null)
                 break;
         }
 
