@@ -178,7 +178,7 @@ public class OpenAddressingHashTable<Key,Value>{
         //Constructor(newSize) already update m value to next primeIndex
         OpenAddressingHashTable<Key, Value> aux = new OpenAddressingHashTable<>(this.primeIndex);
         //placing all existing keys on new hashTable
-        for (int i = 0; i < m-1; i++) {
+        for (int i = 0; i < m; i++) {
             //reinserting only valid keys;
             // (values[i] != null) talvez funcione;
             if (keys[i] != null && values[i] != null) aux.put(keys[i], values[i]);

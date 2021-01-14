@@ -1,8 +1,8 @@
 package aed.matrix;
 
-import aed.tables.OpenAdressingHashTable;
-
 public class Sparse2DMatrix {
+
+    /*
 
     public Sparse2DMatrix(int lines, int columns)
     {
@@ -11,7 +11,7 @@ public class Sparse2DMatrix {
 
     public int getNumberNonZero() {
 		//TODO: implement
-        return;
+
     }
 
     public void put(int line, int column, float value)
@@ -50,5 +50,5 @@ public class Sparse2DMatrix {
 		//TODO: implement
     }
 
-
+    */
 }
