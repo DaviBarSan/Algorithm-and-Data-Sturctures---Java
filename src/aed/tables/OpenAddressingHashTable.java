@@ -103,6 +103,7 @@ public class OpenAddressingHashTable<Key,Value>{
             if (keys[i].equals(k)) {
                 //se for inserida chave ja existente mas antes estava marcada como apagada (values[i] == null), será um reciclagem;
                 if (values[i] == null) {
+                    deletedCounter--;
                     break;
                 }
                 //updating value
@@ -121,8 +122,8 @@ public class OpenAddressingHashTable<Key,Value>{
     }
 
     public void delete(Key k) {
-        if (k == null) return;
         //lazy delete
+        if (k == null) return;
         int i = hash(k);
         for (; keys[i] != null; i = (i + 1) % m) {
             //i index already positionated in exactely index that might be deleted
@@ -135,41 +136,39 @@ public class OpenAddressingHashTable<Key,Value>{
                 break;
             }
         }
-        if (primeIndex > MIN_PRIMEINDEX && loadFactor < 0.125f) {
+        if (primeIndex > MIN_PRIMEINDEX && loadFactor < 0.125) {
             resize(--primeIndex);
         }
         if (((float) deletedCounter / m) >= 0.2f) {
             resize(primeIndex);
         }
     }
-
     public Iterable<Key> keys(){
         return new Iterable<Key>() {
             @Override
             public Iterator<Key> iterator() {
                 return new Iterator<Key>() {
                     int currentIndex = 0;
+                    int validKeys = 0;
 
                     @Override
                     public boolean hasNext() {
-                        return keys[currentIndex % m] != null;
+                        return validKeys < size;
                     }
 
                     @Override
                     public Key next() {
-                        if(!hasNext()) return null;
-
-                        else if (values[currentIndex % m] == null){
-                             currentIndex++;
-                             return next();
-                        }
+                        while(hasNext() && values[currentIndex] == null) {
+                            currentIndex++;
+                            }
+                        if (!hasNext()) return null;
+                        validKeys++;
                         return keys[currentIndex++];
                     }
                 };
             }
         };
     }
-
     //-------------------- acessory methods ----------------------
     private void resize(int primeIndex) {
         //avoid errors
@@ -181,6 +180,7 @@ public class OpenAddressingHashTable<Key,Value>{
         //placing all existing keys on new hashTable
         for (int i = 0; i < m-1; i++) {
             //reinserting only valid keys;
+            // (values[i] != null) talvez funcione;
             if (keys[i] != null && values[i] != null) aux.put(keys[i], values[i]);
         }
         this.keys = aux.keys;
@@ -194,35 +194,49 @@ public class OpenAddressingHashTable<Key,Value>{
         this.m = primes[newPrimeIndex];
         this.keys = (Key[]) new Object[m];
         this.values = (Value[]) new Object[m];
-
-
     }
 
     //LinearProbing pode gerar um clustering, ou agrupamento. Isto é, criar aglomerados de keys, que resulta em baixa
     //eficiencia em outros methods, devido a uma busca linear prolongada
     private int doubleHash(Key k) {
-        return 1 + (k.hashCode() & 0x7fffffff) % (m - 1);
+        return primes[primes.length-1] + (k.hashCode() & 0x7fffffff) % (m - 1);
         //um methodo de evitar isso é criar um segundo hashing, idependente do primeiro, que possa fazer iterações saltando
         //entre keys, mas sem causar aglomeração uma vez que usa a mesma lógica do hash. Tende a manter distribuição mais uniforme;
     }
-
     public void doublehashedPut(Key k, Value v) {
-        if (loadFactor >= 0.5) resize(++primeIndex);
+        if (k == null) return;
+        if (v == null) {
+            delete(k);
+            return;
+        }
         int i = hash(k);
-        int y = doubleHash(k);
-        //avançar o ponteiro i usando doubleHash até um valor null dentro da hashTable, fazendo linearProbing
-        for (; keys[i] != null; i = (i + y) % m) {
-            //caso nessa busca encontre uma chave correspondente, fazer o update da chave falor
+        int y= doubleHash(k);
+
+            //avançar com o ponteiro i até um valor null dentro da hashTable, fazendo linearProbing
+        for (int j = 0; keys[i] != null; i = (i + (y*j++)) % m){
+            //check if key already exists
             if (keys[i].equals(k)) {
+                //se for inserida chave ja existente mas antes estava marcada como apagada (values[i] == null), será um reciclagem;
+                if (values[i] == null) {
+                    deletedCounter--;
+                    break;
+                }
+                //updating value
                 values[i] = v;
                 return;
-            } else if (values[i] == null)
-                break;
+            }
         }
-
-
+        //once key index was found, insert it
+        keys[i] = k;
+        values[i] = v;
+        size++;
+        this.loadFactor = (float) size / m;
+        if (loadFactor >= 0.5f) {
+            resize(++primeIndex);
+        }
     }
 }
+
 /*  ------CORNER SITUATION----
     ->quando usar put, e encontrar uma tombstone, usar esta ao invés de continuar buscando uma key null; DONE
     ->quando fizer resize, a tombstone não deve inserida novamente, então deve-se diminuir size e deletedCounter; DONE
@@ -231,8 +245,49 @@ public class OpenAddressingHashTable<Key,Value>{
     ->ao fazer delete de uma key, caso deletedCounter/m >= 0.2, as tombstones devem ser efetivamente deletadas; DONE
 
 
+    for (int j = 0; keys[i] != null; i = (i + y*j++) % m) {
 
     classe deleted
         ponteiro para as tombstones;
         method que apaga todas as tombstones;
+
+---------------TESTER-------------------
+criar clusters gigantes com o put(LINEARPROBING) e em seguida realizar get(LINEARPROBING) dos keys inseridos;
+salvar o tempo levado para o último;
+
+usar array put(DOUBLEHASHING) e em seguida realizar get(DOUBLEHASHING) dos keys inseridos;
+salvar o tempo levado para o último;
+
+
+LINEARPROBING PUT:
+
+
+
+
+
+LINEARP
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  */
+
+
