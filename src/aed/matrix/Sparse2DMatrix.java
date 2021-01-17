@@ -9,7 +9,9 @@ public class Sparse2DMatrix {
     int numberOfColumns;
     int numberOfRows;
     //put valid indexes in an nested array to easier access by hashing
-    int[] validIndexes;
+
+    OpenAddressingHashTable hashTableMatrix;
+
 
 
 
@@ -17,10 +19,12 @@ public class Sparse2DMatrix {
     {
 
         this.newMatrix = new Sparse2DMatrix[lines][columns];
-        this.size = 0;
+        this.hashTableMatrix = new OpenAddressingHashTable();
+
+
+        this.size = hashTableMatrix.size();
         this.numberOfColumns = newMatrix.length;
         this.numberOfRows = newMatrix[0].length;
-
     }
 
     public int getNumberNonZero() {
@@ -29,17 +33,29 @@ public class Sparse2DMatrix {
 
     public void put(int line, int column, float value)
     {
-        hashingIndex(line,column, newMatrix.length);
+        int matrixIndex = hashingIndex(line,column, numberOfColumns);
+        if (value == 0){
+            hashTableMatrix.put(matrixIndex,null);
+            return;
+        }
+        hashTableMatrix.put(matrixIndex,value);
+
+
+
+
     }
 
     public float get(int line, int column)
     {
-        //TODO: implement
+        int i = hashingIndex(line, column, numberOfColumns);
+        float value = (float) hashTableMatrix.get(i);
+        return value;
     }
 
     public Sparse2DMatrix scalar(float scalar)
     {
-        //TODO: implement
+        Sparse2DMatrix aux = new Sparse2DMatrix(this.numberOfColumns, this.numberOfColumns);
+
     }
 
     public Sparse2DMatrix sum(Sparse2DMatrix that)
@@ -55,18 +71,26 @@ public class Sparse2DMatrix {
 	
 	public float[] getNonZeroElements()
     {
-        int[] nonZeroArray = new int[size];
+        float[] nonZeroArray = new float[size];
 
+        hashTableMatrix.keys().forEach( (key) -> {
+                float currentValue = (float) hashTableMatrix.get(key);
 
+            }
 
+        );
+        return nonZeroArray;
     }
+
 
     public float[][] getNonSparseMatrix()
     {
-		//TODO: implement
+
     }
-//  ----------------------------------------acessory methods;
-    public int hashingIndex(int line, int column, int columnMax){
-        int i = line * columnMax + column;
+//  ----------------------------------------accessory methods;
+    public int hashingIndex(int line, int column, int numberOfColumns){
+        int i = line * numberOfColumns + column;
+        return i;
+
     }
 }
