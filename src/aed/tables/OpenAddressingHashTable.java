@@ -10,9 +10,9 @@ public class OpenAddressingHashTable<Key,Value>{
     float loadFactor;
     int deletedCounter;
 
-
-    private Key[] keys;
-    private Value[] values;
+    //public for test propouses. main_hashTable must be able to access this arrays;
+    public Key[] keys;
+    public Value[] values;
 
 
     private static final int[] primes = {
@@ -203,10 +203,10 @@ public class OpenAddressingHashTable<Key,Value>{
         //um methodo de evitar isso é criar um segundo hashing, idependente do primeiro, que possa fazer iterações saltando
         //entre keys, mas sem causar aglomeração uma vez que usa a mesma lógica do hash. Tende a manter distribuição mais uniforme;
     }
-    public void doublehashedPut(Key k, Value v) {
+    public void putDoubleHashed(Key k, Value v) {
         if (k == null) return;
         if (v == null) {
-            delete(k);
+            deleteDoubleHashed(k);
             return;
         }
         int i = hash(k);
@@ -234,6 +234,47 @@ public class OpenAddressingHashTable<Key,Value>{
         if (loadFactor >= 0.5f) {
             resize(++primeIndex);
         }
+    }
+    public void deleteDoubleHashed(Key k) {
+        if (k == null) return;
+        int i = hash(k);
+        int y = doubleHash(k);
+        for (int j = 0; keys[i] != null; i = (i + (y*j++)) % m) {
+            //i index already positionated in exactely index that might be deleted
+            if (keys[i].equals(k)) {
+                if (values[i] == null) return;
+                values[i] = null;
+                deletedCounter++;
+                size--;
+                this.loadFactor = (float) size/m;
+                break;
+            }
+        }
+        if (primeIndex > MIN_PRIMEINDEX && loadFactor < 0.125f) {
+            resize(--primeIndex);
+        }
+        if (((float) deletedCounter / m) >= 0.2f) {
+            resize(primeIndex);
+        }
+
+    }
+    public Value getDoubleHashed(Key k) {
+        int i = hash(k);
+        int y = doubleHash(k);
+        //difference between == and .equals():
+        // == operator do an adress comparation, setted in object memory location;
+        //.equals() method compares the content. Even if the objects has different memory adress location, if the content
+        //is equal, it return true
+        for (int j = 0; keys[i] != null; i = (i + (y*j++)) % m) {
+            if (keys[i].equals(k)) {
+                if (values[i] == null) {
+                    return null;
+                }
+                return values[i];
+            }
+        }
+        return null;
+
     }
 }
 
