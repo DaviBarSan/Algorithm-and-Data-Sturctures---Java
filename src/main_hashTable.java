@@ -1,6 +1,6 @@
 import aed.tables.OpenAddressingHashTable;
 
-import java.security.Key;
+
 import java.util.Arrays;
 
 public class main_hashTable{
@@ -8,37 +8,34 @@ public class main_hashTable{
         OpenAddressingHashTable testTableDoubleHasshed = new OpenAddressingHashTable();
 
         for (int i = 8; i/ testTableDoubleHasshed.getCapacity() <= 10; i = i + testTableDoubleHasshed.getCapacity()) {
-            testTableDoubleHasshed.putDoubleHashed(i, i);
+            testTableDoubleHasshed.put(i, i);
         }
-        for (int i = 8; i/37 < 4; i = i + 37) {
-            testTableDoubleHasshed.deleteDoubleHashed(i);
-        }
-        for (int i = 8; i/37 < 2; i = i + 37) {
-            testTableDoubleHasshed.putDoubleHashed(i, i);
+
+        for (int i = 8; i/37 < 1490; i = i + 37) {
+            testTableDoubleHasshed.put(i, i);
         }
         System.out.println(Arrays.toString(testTableDoubleHasshed.keys));
         System.out.println(Arrays.toString(testTableDoubleHasshed.values));
-
+/*
         OpenAddressingHashTable testTable = new OpenAddressingHashTable();
 
-        for (int i = 8; i/ testTable.getCapacity() <= 10; i = i + testTable.getCapacity()) {
-            testTable.put(i, i);
+        for (int i = 8; i/ testTable.getCapacity() <= 500; i = i + testTable.getCapacity()) {
+            testTable.putLinearProbing(i, i);
         }
         for (int i = 8; i/37 < 4; i = i + 37) {
-            testTable.delete(i);
+            testTable.deleteLinearProbing(i);
         }
         for (int i = 8; i/37 < 2; i = i + 37) {
-            testTable.put(i, i);
+            testTable.putLinearProbing(i, i);
         }
 
         System.out.println(Arrays.toString(testTable.keys));
         System.out.println(Arrays.toString(testTable.values));
-
-        testTable.keys().forEach( key ->
-                System.out.println(testTable.get(key)));
-
-
+*/
+        testTableDoubleHasshed.keys().forEach( key ->
+                System.out.println(testTableDoubleHasshed.get(key)));
     }
+
 
 
 }
