@@ -46,9 +46,10 @@ public class Sparse2DMatrix {
 
     public Sparse2DMatrix scalar(float scalar) {
         Iterable tableIterator = dataHashTable.keys();
-        for (float v : dataHashTable.values) {
-            dataHashTable.put();
-        }
+
+        tableIterator.forEach( key ->
+                dataHashTable.put((Integer) key,dataHashTable.get((Integer) key)*scalar)
+        );
         return this;
     }
 
@@ -57,7 +58,7 @@ public class Sparse2DMatrix {
     }
 
     public int getNonZeroElements() {
-       return 3;
+       return size;
     }
 
     public float[][] getNonSparseMatrix() {
