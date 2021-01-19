@@ -28,20 +28,24 @@ public class Sparse2DMatrix {
         return size;
     }
 
-    public void put(int line, int column, float value) {
+    public void put(int line, int column, float new_value) {
         int matrixIndex = hashingFuction(line, column, numberOfColumns);
-        if (value == 0) {
+        Object valueInMatrix = dataHashTable.get(matrixIndex);
+        if (new_value == 0 && valueInMatrix != null) {
             dataHashTable.put(matrixIndex, null);
             return;
         }
 
-        dataHashTable.put(matrixIndex, value);
+        dataHashTable.put(matrixIndex, new_value);
     }
 
     public float get(int line, int column) {
         int hash = hashingFuction(line, column, numberOfColumns);
-        float value = dataHashTable.get(hash);
-        return value;
+        Object value = dataHashTable.get(hash);
+        if (value == null) {
+            return 0.0f;
+        };
+        return (Float) value;
     }
 
     public Sparse2DMatrix scalar(float scalar) {
@@ -53,11 +57,18 @@ public class Sparse2DMatrix {
         return this;
     }
 
-    public Sparse2DMatrix sum (Sparse2DMatrix that) {
-        Iterable tableIterator = dataHashTable.keys();
-        tableIterator.forEach( key ->
-                dataHashTable.put((Integer) key, (dataHashTable.get((Integer)key)) + (that.dataHashTable.get((Integer) key)))
-                );
+    public Sparse2DMatrix sum (Sparse2DMatrix matrixB) {
+        Iterable bKeys = matrixB.dataHashTable.keys();
+
+        bKeys.forEach( bKey -> {
+            Object valueInA = dataHashTable.get((Integer) bKey);
+            Object valueInB = matrixB.dataHashTable.get((Integer) bKey);
+            if (valueInA == null) { // only in b
+                dataHashTable.put((Integer) bKey, (Float) valueInB);
+            } else { // exists in A, sums values
+                dataHashTable.put((Integer) bKey, (Float) valueInB + (Float) valueInA);
+            }
+        });
         return this;
     }
 
