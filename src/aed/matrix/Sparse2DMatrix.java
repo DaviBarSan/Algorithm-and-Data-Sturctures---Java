@@ -33,12 +33,12 @@ public class Sparse2DMatrix {
     public void put(int line, int column, float new_value) {
         int matrixIndex = hashingFuction(line, column, numberOfColumns);
         Object valueInMatrix = dataHashTable.get(matrixIndex);
-        if (new_value == 0 && valueInMatrix != null) {
+        if (new_value == 0) {
+            if(valueInMatrix == null) return;
             dataHashTable.put(matrixIndex, null);
             this.size = dataHashTable.size();
             return;
         }
-
         dataHashTable.put(matrixIndex, new_value);
         this.size = dataHashTable.size();
     }
@@ -49,54 +49,76 @@ public class Sparse2DMatrix {
         if (value == null) {
             return 0.0f;
         };
-        return (Float) value;
+        return (float) value;
     }
 
     public Sparse2DMatrix scalar(float scalar) {
         Iterable tableIterator = dataHashTable.keys();
-
-        tableIterator.forEach( key ->
-                dataHashTable.put((Integer) key,dataHashTable.get((Integer) key)*scalar)
-        );
+        tableIterator.forEach( key ->{
+            if (scalar == 0f){
+                dataHashTable.put((Integer) key,null);
+            }else {
+                dataHashTable.put((Integer) key, dataHashTable.get((Integer) key) * scalar);
+            }
+        });
         return this;
     }
 
     public Sparse2DMatrix sum (Sparse2DMatrix matrixB) {
-        if (matrixB.numberOfColumns != numberOfColumns || matrixB.numberOfRows != numberOfRows) {
-            throw new IllegalArgumentException("Matrix are not of the same size");
+
+
+        if (matrixB.numberOfColumns != this.numberOfColumns || matrixB.numberOfRows != this.numberOfRows) {
+            throw new IllegalArgumentException(); // Duvida do formato;
         }
 
         Iterable bKeys = matrixB.dataHashTable.keys();
-
         bKeys.forEach( bKey -> {
             Object valueInA = dataHashTable.get((Integer) bKey);
             Object valueInB = matrixB.dataHashTable.get((Integer) bKey);
-            if (valueInA == null) { // only in b
-                dataHashTable.put((Integer) bKey, (Float) valueInB);
+            if (valueInA == null) { // valid value only in b
+                dataHashTable.put((Integer) bKey, (float) valueInB);
             } else { // exists in A, sums values
-                dataHashTable.put((Integer) bKey, (Float) valueInB + (Float) valueInA);
+                dataHashTable.put((Integer) bKey,((float) valueInA) + (float) valueInB);
             }
         });
         return this;
     }
 
     public Sparse2DMatrix multiply(Sparse2DMatrix that) {
+        // check if the matrix sizes matches;
+        // use a method which reconverts ordinal indexes to matrix indexes
+        // multiply for each in line A by each column B;
+
         return this;
     }
 
     public float[] getNonZeroElements() {
-        float [] validValues = new float[size];
-        Iterator tableIterator = dataHashTable.keys().iterator();
-
-        for (int i = 0; i < dataHashTable.size(); i++){
-            validValues[i] = (float) tableIterator.next();
+        float [] validValues = new float[dataHashTable.size()];
+        Iterator keysIterator = dataHashTable.keys().iterator();
+        for (int i = 0; i < dataHashTable.size(); i++) {
+            int validKey = (int) keysIterator.next();
+            validValues[i] = dataHashTable.get(validKey);
         }
        return validValues;
     }
 
     public float[][] getNonSparseMatrix() {
         float[][] sahud = new float[5][5];
+        // access each index in each
         return sahud;
     }
+    // --------------------------------- accessory methods ---------------------------
+    private int[] fromOrdinalToMatricial(int ordinal, Sparse2DMatrix matrix) {
+        int[] matricial = new int[2];
+
+        int maxColumns = matrix.numberOfColumns;
+        int line = ordinal / maxColumns;
+        int column = ordinal % maxColumns;
+        matricial[0] = line;
+        matricial[1] = column;
+        return matricial;
+    }
+
+
 
 }
