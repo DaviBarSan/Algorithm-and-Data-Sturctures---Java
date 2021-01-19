@@ -40,7 +40,7 @@ public class Sparse2DMatrix {
 
     public float get(int line, int column) {
         int hash = hashingFuction(line, column, numberOfColumns);
-        float value = (float) dataHashTable.get(hash);
+        float value = dataHashTable.get(hash);
         return value;
     }
 
@@ -53,12 +53,25 @@ public class Sparse2DMatrix {
         return this;
     }
 
+    public Sparse2DMatrix sum (Sparse2DMatrix that) {
+        Iterable tableIterator = dataHashTable.keys();
+        tableIterator.forEach( key ->
+                dataHashTable.put((Integer) key, (dataHashTable.get((Integer)key)) + (that.dataHashTable.get((Integer) key)))
+                );
+        return this;
+    }
+
     public Sparse2DMatrix multiply(Sparse2DMatrix that) {
         return this;
     }
 
-    public int getNonZeroElements() {
-       return size;
+    public float[] getNonZeroElements() {
+        float [] validValues = new float[size];
+        Iterable tableIterator = dataHashTable.keys();
+        for (int i = 0; i < size; i++){
+            validValues[i] = (float) tableIterator.iterator().next();
+        }
+       return validValues;
     }
 
     public float[][] getNonSparseMatrix() {
