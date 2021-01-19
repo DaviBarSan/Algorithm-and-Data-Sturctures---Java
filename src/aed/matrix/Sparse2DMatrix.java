@@ -1,5 +1,7 @@
 package aed.matrix;
 
+import java.util.Iterator;
+
 import aed.tables.OpenAddressingHashTable;
 
 @SuppressWarnings("unchecked")
@@ -25,7 +27,7 @@ public class Sparse2DMatrix {
     }
 
     public int getNumberNonZero() {
-        return size;
+        return dataHashTable.size();
     }
 
     public void put(int line, int column, float new_value) {
@@ -33,10 +35,12 @@ public class Sparse2DMatrix {
         Object valueInMatrix = dataHashTable.get(matrixIndex);
         if (new_value == 0 && valueInMatrix != null) {
             dataHashTable.put(matrixIndex, null);
+            this.size = dataHashTable.size();
             return;
         }
 
         dataHashTable.put(matrixIndex, new_value);
+        this.size = dataHashTable.size();
     }
 
     public float get(int line, int column) {
@@ -58,6 +62,10 @@ public class Sparse2DMatrix {
     }
 
     public Sparse2DMatrix sum (Sparse2DMatrix matrixB) {
+        if (matrixB.numberOfColumns != numberOfColumns || matrixB.numberOfRows != numberOfRows) {
+            throw new IllegalArgumentException("Matrix are not of the same size");
+        }
+
         Iterable bKeys = matrixB.dataHashTable.keys();
 
         bKeys.forEach( bKey -> {
@@ -78,9 +86,10 @@ public class Sparse2DMatrix {
 
     public float[] getNonZeroElements() {
         float [] validValues = new float[size];
-        Iterable tableIterator = dataHashTable.keys();
-        for (int i = 0; i < size; i++){
-            validValues[i] = (float) tableIterator.iterator().next();
+        Iterator tableIterator = dataHashTable.keys().iterator();
+
+        for (int i = 0; i < dataHashTable.size(); i++){
+            validValues[i] = (float) tableIterator.next();
         }
        return validValues;
     }
