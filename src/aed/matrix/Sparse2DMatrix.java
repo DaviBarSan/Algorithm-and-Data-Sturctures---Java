@@ -90,11 +90,33 @@ public class Sparse2DMatrix {
     }
 
     public Sparse2DMatrix multiply(Sparse2DMatrix that) {
-        // check if the matrix sizes matches;
+        if (this.numberOfColumns != that.numberOfLines) {
+            throw new IllegalArgumentException();
+        }
+        Sparse2DMatrix matrixC = new Sparse2DMatrix(numberOfLines, that.numberOfColumns);
+
+        Iterable iterableMatrixA = dataHashTable.keys();
+        Iterator iteratorMatrixA = iterableMatrixA.iterator();
+        iterableMatrixA.forEach( validKeyA ->
+        {
+            int currKeyLineA = linesMatricial((Integer) validKeyA, this);
+            int currKeyColumnA = columnsMatricial((Integer) validKeyA, this);
+            float currValueA = this.get(currKeyLineA, currKeyColumnA);
+            int currKeyLineB = currKeyColumnA;//
+            int currKeyColumnB = currKeyLineA;//
+            float currValueB = that.get(currKeyLineB, currKeyColumnB);
+            int currLineC = currKeyLineA;
+            int currColumnC = currKeyColumnB;
+            if (currValueB == 0f) return;
+            float multiplication = currValueA * currValueB;
+            sumSlot(multiplication,currLineC,currColumnC,matrixC);
+        });
+
         // use a method which reconverts ordinal indexes to matrix indexes
         // multiply for each in line A by each column B;
+            return matrixC;
 
-        return this;
+        // check if the matrix sizes matches;
     }
 
     public float[] getNonZeroElements() {
@@ -111,24 +133,19 @@ public class Sparse2DMatrix {
         float[][] nonSparseMatrix = new float[numberOfLines][numberOfColumns];
         // access each index in each
         int totalSlots = numberOfColumns * numberOfLines;
-        /*
+
         for (int i = 0; i < totalSlots; i++){
             int currKey = i;
             Float currValue = dataHashTable.get(currKey);
-
             int m = linesMatricial(i, this);
             int n = columnsMatricial(i, this);
 
             if (currValue == null) {
                 nonSparseMatrix[m][n] = 0.0f;
-
+                continue;
             }
-            nonSparseMatrix[m][n] = currKey;
+            nonSparseMatrix[m][n] = currValue;
         }
-
-         */
-
-
         return nonSparseMatrix;
     }
 
@@ -144,6 +161,56 @@ public class Sparse2DMatrix {
         int column = ordinal % maxColumns;
         return column;
     }
-
+    private void sumSlot(float value, int line, int column, Sparse2DMatrix matrix){
+        float currentSlotValue = matrix.get(line, column);
+        float finalValue = currentSlotValue + value;
+        matrix.put(line, column, finalValue);
+    }
 
 }
+
+/*
+for (int currIndexA = 0; currIndexA < totalSlotsMatrixA; currIndexA++){
+            int currLineB = columnsMatricial(currIndexA, this);//4 lines  (eg: that == 4x2)
+            int currColumnB = linesMatricial(currIndexA, that);//2 columns (eg: that == 4x2)
+
+            int currLineA = linesMatricial(currIndexA, this);
+            int currColumnA = columnsMatricial(currIndexA, this);
+
+
+            float currValueA = this.get(currLineA, currColumnA);
+            float currValueB = that.get(currLineB, currColumnB);
+            float multiplyResult = currValueA * currValueB;
+            if(multiplyResult != 0.0f){
+                int currLineC = linesMatricial(currIndexA, this);
+                int currColumnC = currColumnB;
+                multiplyResultSum += multiplyResult;
+            }
+            if ()
+
+
+for (int currLineA = 0; currLineA < numberOfLines; currLineA++){
+            int currKeyA = (int) iteratorMatrixA.next();
+            Object currValueA = dataHashTable.get(currKeyA);
+            int currKeyLineA = linesMatricial(currKeyA, this);
+            if (currKeyLineA >= currLineA) continue;// o o proximo valor válido já não esta nessa linha, saltar para a proxima
+            int currKeyColumnA = columnsMatricial(currKeyA, this);
+            while (currKeyColumnA <= that.numberOfLines) {
+                int currKeyColumnB = linesMatricial(currKeyLineA, this);// unhashing to locate current corresondent position in matrix B
+                int currKeyLineB = columnsMatricial(currKeyLineA, this);// unhashing to locate current corresondent position in matrix B
+                float currValueB = (int) that.get(currKeyLineB, currKeyColumnB);
+
+                if (currValueB == 0f) {
+                    iteratorMatrixA.next();
+                    continue;
+                }
+                multiplicationResult = (float) currValueA * currValueB;
+                sumMultiplication += multiplicationResult;
+                iteratorMatrixA.next();
+            }
+            int currLineC = currKeyLineA;
+            int currColumnC = linesMatricial(currKeyLineA, this);
+            matrixC.put(currLineC, currColumnC, sumMultiplication);
+            sumMultiplication = 0;
+        }
+ */

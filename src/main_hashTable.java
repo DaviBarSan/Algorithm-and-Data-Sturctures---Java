@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
 
+/*
 public class main_hashTable {
     public static void main(String[] args) {
 
@@ -88,3 +89,4 @@ public class main_hashTable {
 
 
 }
+*/
